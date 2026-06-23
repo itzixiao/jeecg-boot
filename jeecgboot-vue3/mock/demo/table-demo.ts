@@ -48,7 +48,9 @@ export default [
     method: 'get',
     response: ({ query }) => {
       const { page = 1, pageSize = 20 } = query;
-      return resultPageSuccess(page, pageSize, demoList);
+      // 代码逻辑说明: 【issues/6943】mock翻页之后数据id和图片没自动刷新
+      const pageNo = +(query.pageNo ?? page);
+      return resultPageSuccess(pageNo, +pageSize, demoList);
     },
   },
 ] as MockMethod[];

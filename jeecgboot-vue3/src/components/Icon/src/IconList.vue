@@ -3,7 +3,7 @@
     <a-input :placeholder="t('component.icon.search')" v-model:value="searchIconValue" @change="debounceHandleSearchChange" allowClear />
   </div>
   <div v-if="getPaginationList.length > 0">
-    <ScrollContainer>
+    <div class="overflow-auto">
       <ul class="px-2 icon-list" style="padding-right: 0">
         <li
           v-for="icon in getPaginationList"
@@ -17,7 +17,7 @@
           <Icon :icon="icon" v-else />
         </li>
       </ul>
-    </ScrollContainer>
+    </div>
     <div class="flex py-2 items-center justify-content-right mr-10 mt-5" v-if="getTotal >= pageSize && isPage">
       <Pagination
         showLessItems
@@ -36,7 +36,6 @@
 </template>
 
 <script lang="ts" name="icon-list">
-  import { ScrollContainer } from '@/components/Container';
   import SvgIcon from '@/components/Icon/src/SvgIcon.vue';
   import Icon from '@/components/Icon/src/Icon.vue';
   import { defineComponent, ref, unref, watchEffect} from 'vue';
@@ -49,12 +48,12 @@
   import { Empty, Pagination } from 'ant-design-vue';
   export default defineComponent({
     components: {
-      ScrollContainer,
       SvgIcon,
       Icon,
       Empty,
       Pagination,
     },
+    emits: ['update:value'],
     props: {
       currentList: propTypes.any.def([]),
       clearSelect: propTypes.bool.def(false),
@@ -89,10 +88,9 @@
       function handleSearchChange(e: ChangeEvent) {
         const value = e.target.value;
         console.log("value::::",value)
-        //update-begin---author:wangshuai ---date:20230522  for：【issues/4947】菜单编辑页面菜单图标选择模板，每页显示数量切换无效------------
+        // 代码逻辑说明: 【issues/4947】菜单编辑页面菜单图标选择模板，每页显示数量切换无效------------
         setCurrentPage(1);
         current.value = 1;
-        //update-end---author:wangshuai ---date:20230522  for：【issues/4947】菜单编辑页面菜单图标选择模板，每页显示数量切换无述------------
         if (!value) {
           currentList.value = props.currentList;
           return;
@@ -100,7 +98,6 @@
         currentList.value = props.currentList.filter((item) => item.includes(value));
       }
 
-      //update-begin---author:wangshuai ---date:20230522  for：【issues/4947】菜单编辑页面菜单图标选择模板，每页显示数量切换无效，输入框后面的图标点击之后清空数据------------
       /**
        * 图标点击重置页数
        */
@@ -112,14 +109,12 @@
         currentList.value = props.currentList;
         searchIconValue.value = '';
       }
-      //update-end---author:wangshuai ---date:20230522  for：【issues/4947】菜单编辑页面菜单图标选择模板，每页显示数量切换无效，输入框后面的图标点击之后清空数据------------
 
       function handlePageChange(page: number, size: number) {
-        //update-begin---author:wangshuai ---date:20230522  for：【issues/4947】菜单编辑页面菜单图标选择模板，每页显示数量切换无效------------
+        // 代码逻辑说明: 【issues/4947】菜单编辑页面菜单图标选择模板，每页显示数量切换无效------------
         current.value = page;
         pageSize.value = size;
         setPageSize(size);
-        //update-end---author:wangshuai ---date:20230522  for：【issues/4947】菜单编辑页面菜单图标选择模板，每页显示数量切换无效------------
         setCurrentPage(page);
       }
 
@@ -143,6 +138,7 @@
             }
           }
         }
+        emit('update:value', currentSelect.value);
       }
 
       /**
@@ -185,11 +181,10 @@
   }
   ul span {
     font-size: 1.5rem !important;
-    border: 1px solid #f1f1f1;
     padding: 0.2rem;
     margin: 0.3rem;
   }
-  .icon-border span {
+  .icon-border {
     border: 1px solid rgba(24, 144, 255) !important;
   }
   .justify-content-right {
