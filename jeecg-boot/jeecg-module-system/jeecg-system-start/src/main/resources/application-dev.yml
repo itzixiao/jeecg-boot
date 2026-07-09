@@ -2,6 +2,7 @@ server:
   port: 8080
   tomcat:
     max-swallow-size: -1
+    basedir: ..
   servlet:
     context-path: /jeecg-boot
   compression:
@@ -19,11 +20,6 @@ spring:
   #  main:
   #    # 启动加速 (建议开发环境，开启后flyway自动升级失效)
   #    lazy-initialization: true
-  web:
-    error:
-      include-exception: true
-      include-stacktrace: ALWAYS
-      include-message: ALWAYS
   flyway:
     # 是否启用flyway
     enabled: false
@@ -110,7 +106,6 @@ spring:
     static-locations: classpath:/static/,classpath:/public/
   autoconfigure:
     exclude:
-      - com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure
       - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
   datasource:
     druid:
@@ -192,7 +187,7 @@ jeecg:
   # AI集成
   ai-chat:
     enabled: true
-    model: deepseek-chat
+    model: deepseek-v4-pro
     apiKey: ??
     apiHost: https://api.deepseek.com/v1
     timeout: 60
@@ -244,12 +239,12 @@ jeecg:
       timeout: 60
   # AIRag向量库
   ai-rag:
-    # AI流程敏感节点(stdio=命令行节点, sql=SQL节点)
-    allow-sensitive-nodes: sql,stdio
+    # AI流程敏感节点(stdio=命令行节点, sql=SQL节点, code=代码节点/脚本执行,高危存在RCE风险默认禁用)
+    allow-sensitive-nodes: sql,stdio,code
     embed-store:
       host: 127.0.0.1
       port: 5432
-      database: postgres
+      database: vector_db
       user: postgres
       password: postgres
       table: embeddings
